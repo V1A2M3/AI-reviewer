@@ -1,37 +1,40 @@
 import streamlit as st
 from google.cloud import aiplatform
 
-# Configure API key
-api_key = "AIzaSyD8_LN6yHSQNPzU5Aeu6NLEDiVt-isDBds"
-aiplatform.init(project="649270149201", api_key=api_key)
+# Create a Streamlit app
+st.title("Code Review App")
 
-# Streamlit UI
-st.title("Python AI Code Reviewer")
-st.write("Enter your Python code below and get a detailed review!")
+# Get the code from the user
+code = st.text_area("Enter your code here:", height=200)
 
-user_code = st.text_area("Enter Python code here ...", height=250)
+# Create a button to submit the code
+if st.button("Submit"):
+    # Perform code review
+    review = perform_code_review(code)
+    
+    # Display the code review
+    st.subheader("Code Review:")
+    st.write(review)
 
-if st.button("Generate Review"):
-    if user_code.strip():
-        st.write("Analyzing your code... Please wait ")
-        # Creating the prompt for AI
-        prompt = f"Review the following Python code. Identify potential bugs, inefficiencies, and suggest improvements:\n\n{user_code}"
-        # Call Google Generative AI API
-        try:
-            client = aiplatform.services.generative_ai.GenerativeAiClient()
-            request = aiplatform.services.generative_ai.GenerateRequest(
-                prompt=prompt,
-                max_length=512,
-                top_p=0.9,
-                temperature=1.0
-            )
-            response = client.generate(request)
-            review_result = response.generated_text
-            st.subheader("")
-            st.markdown(review_result)
-        except Exception as e:
-            st.error(f"Error while analyzing code: {e}")
-    else:
-        st.warning("")
+def perform_code_review(code):
+    # This function performs the code review
+    # For simplicity, let's just use a text generation model
+    try:
+        client = aiplatform.TextGeneration(
+            display_name="text-generation",
+            location="us-central1",
+            project="649270149201"
+        )
+        request = aiplatform.TextGenerationRequest(
+            prompt=code,
+            max_length=512,
+            top_p=0.9,
+            temperature=1.0
+        )
+        response = client.generate_text(request)
+        review = response.generated_text
+        return review
+    except Exception as e:
+        return f"Error while analyzing code: {e}"
 
 
