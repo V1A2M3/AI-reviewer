@@ -7,10 +7,19 @@ def configure_api(api_key):
 def generate_review(prompt):
     try:
         # Create a client
-        client = aiplatform.TextClient()
+        client = aiplatform.TextGeneration(
+            display_name="text-generation",
+            location="us-central1",
+            project="649270149201"
+        )
 
         # Send the request
-        response = client.generate_text(prompt=prompt)
+        response = client.generate_text(
+            prompt=prompt,
+            max_length=512,
+            top_p=0.9,
+            temperature=1.0
+        )
 
         # Get the generated text
         generated_text = response.text
@@ -45,4 +54,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
