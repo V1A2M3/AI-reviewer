@@ -2,7 +2,7 @@ import streamlit as st
 from google.cloud import aiplatform
 
 def configure_api(api_key):
-    aiplatform.init(project="your-project-id", api_key=api_key)
+    aiplatform.init(project="649270149201", api_key="AIzaSyD8_LN6yHSQNPzU5Aeu6NLEDiVt-isDBds")
 
 def generate_review(prompt):
     try:
