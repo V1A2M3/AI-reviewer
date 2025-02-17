@@ -2,7 +2,7 @@ import streamlit as st
 from google.cloud import aiplatform
 
 # Create a Streamlit app
-st.title("Code Review App")
+st.title("Python Code Reviewer App")
 
 # Get the code from the user
 code = st.text_area("Enter your code here:", height=200)
