@@ -1,22 +1,19 @@
 import streamlit as st
 from google.cloud import aiplatform
 
-def configure_api():
-    aiplatform.init(project="your-project-id")
+def configure_api(api_key):
+    aiplatform.init(project="your-project-id", api_key=api_key)
 
 def generate_review(prompt):
     try:
         # Create a client
-        client = aiplatform.PredictionServiceClient()
+        client = aiplatform.TextClient()
 
-        # Create a request for text generation
-        response = client.predict(
-            endpoint="your-endpoint-id",
-            instances=[{"content": prompt}]
-        )
+        # Send the request
+        response = client.generate_text(prompt=prompt)
 
         # Get the generated text
-        generated_text = response.predictions[0]['content']
+        generated_text = response.text
 
         return generated_text
     except Exception as e:
@@ -31,7 +28,8 @@ def main():
     st.title("Python AI Code Reviewer")
     st.write("Enter your Python code below and get a detailed review!")
 
-    configure_api()
+    api_key = "AIzaSyD8_LN6yHSQNPzU5Aeu6NLEDiVt-isDBds"
+    configure_api(api_key)
 
     user_code = st.text_area("Enter Python code here ...", height=250)
 
@@ -47,3 +45,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
