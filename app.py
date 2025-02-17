@@ -1,58 +1,37 @@
 import streamlit as st
 from google.cloud import aiplatform
 
-def configure_api(api_key):
-    aiplatform.init(project="649270149201", api_key="AIzaSyD8_LN6yHSQNPzU5Aeu6NLEDiVt-isDBds")
+# Configure API key
+api_key = "AIzaSyD8_LN6yHSQNPzU5Aeu6NLEDiVt-isDBds"
+aiplatform.init(project="649270149201", api_key=api_key)
 
-def generate_review(prompt):
-    try:
-        # Create a client
-        client = aiplatform.TextGeneration(
-            display_name="text-generation",
-            location="us-central1",
-            project="649270149201"
-        )
+# Streamlit UI
+st.title("Python AI Code Reviewer")
+st.write("Enter your Python code below and get a detailed review!")
 
-        # Send the request
-        response = client.generate_text(
-            prompt=prompt,
-            max_length=512,
-            top_p=0.9,
-            temperature=1.0
-        )
+user_code = st.text_area("Enter Python code here ...", height=250)
 
-        # Get the generated text
-        generated_text = response.text
-
-        return generated_text
-    except Exception as e:
-        st.error(f"Error: {e}")
-        return None
-
-def display_review(review_result):
-    st.subheader("🔍 Code Review Report")
-    st.markdown(review_result)
-
-def main():
-    st.title("Python AI Code Reviewer")
-    st.write("Enter your Python code below and get a detailed review!")
-
-    api_key = "AIzaSyD8_LN6yHSQNPzU5Aeu6NLEDiVt-isDBds"
-    configure_api(api_key)
-
-    user_code = st.text_area("Enter Python code here ...", height=250)
-
-    if st.button("Generate Review"):
-        if user_code.strip():
-            st.write("Analyzing your code... Please wait ⏳")
-            prompt = f"Review the following Python code. Identify potential bugs, inefficiencies, and suggest improvements:\n\n{user_code}"
-            review_result = generate_review(prompt)
-            if review_result:
-                display_review(review_result)
-        else:
-            st.warning("⚠ Please enter some Python code first.")
-
-if __name__ == "__main__":
-    main()
+if st.button("Generate Review"):
+    if user_code.strip():
+        st.write("Analyzing your code... Please wait ")
+        # Creating the prompt for AI
+        prompt = f"Review the following Python code. Identify potential bugs, inefficiencies, and suggest improvements:\n\n{user_code}"
+        # Call Google Generative AI API
+        try:
+            client = aiplatform.services.generative_ai.GenerativeAiClient()
+            request = aiplatform.services.generative_ai.GenerateRequest(
+                prompt=prompt,
+                max_length=512,
+                top_p=0.9,
+                temperature=1.0
+            )
+            response = client.generate(request)
+            review_result = response.generated_text
+            st.subheader("")
+            st.markdown(review_result)
+        except Exception as e:
+            st.error(f"Error while analyzing code: {e}")
+    else:
+        st.warning("")
 
 
